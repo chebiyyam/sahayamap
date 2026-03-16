@@ -24,8 +24,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Home page - shows the damage report form
+# Landing page
 @app.route('/')
+def landing():
+    return render_template('landing.html')
+
+# Report damage form
+@app.route('/report')
 def index():
     return render_template('index.html')
 
