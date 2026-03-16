@@ -30,9 +30,11 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     // For API calls (submit, reports) — network only, don't cache
     if (event.request.url.includes('/submit') ||
-        event.request.url.includes('/reports') ||
-        event.request.url.includes('/relief_data') ||
-        event.request.url.includes('/submit_relief')) {
+    event.request.url.includes('/reports') ||
+    event.request.url.includes('/relief_data') ||
+    event.request.url.includes('/submit_relief') ||
+    event.request.url.includes('/api/') ||
+    event.request.url.includes('/verify')) {
         event.respondWith(
             fetch(event.request).catch(() =>
                 new Response(JSON.stringify({
