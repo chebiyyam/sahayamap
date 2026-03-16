@@ -1,13 +1,19 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect
 import sqlite3
 import os
+from supabase import create_client
+from functools import wraps
+
+SUPABASE_URL = "https://fkzzcmwujwyufuovbtch.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrenpjbXd1and5dWZ1b3ZidGNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2OTQ0MjksImV4cCI6MjA4OTI3MDQyOX0.ALUvJfjhjT-Ln8BwnomUIflSN7b8OT5LshdNg9eFrfQ"
+supabase_client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = Flask(__name__)
+app.secret_key = 'sahayamap-secret-2026'
 
 def get_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    # Always ensure tables exist
     c.execute('''CREATE TABLE IF NOT EXISTS reports (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT, phone TEXT, damage_type TEXT, description TEXT,
@@ -25,42 +31,38 @@ def get_db():
     conn.commit()
     return conn
 
-# Landing page
 @app.route('/')
 def landing():
     return render_template('landing.html')
 
-# Report damage form
 @app.route('/report')
 def index():
     return render_template('index.html')
 
-# Map page
 @app.route('/map')
 def map_view():
     return render_template('map.html')
 
-# Safety checker page
 @app.route('/safety')
 def safety_checker():
     return render_template('safety.html')
 
-# Relief coordination dashboard
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
 @app.route('/relief')
 def relief():
     return render_template('relief.html')
 
-# War Room government dashboard
 @app.route('/warroom')
 def warroom():
     return render_template('warroom.html')
 
-# Serve service worker from root
 @app.route('/sw.js')
 def service_worker():
     return app.send_static_file('sw.js'), 200, {'Content-Type': 'application/javascript'}
 
-# API - submit damage report
 @app.route('/submit', methods=['POST'])
 def submit_report():
     data = request.form
@@ -82,7 +84,6 @@ def submit_report():
     conn.close()
     return jsonify({'success': True, 'message': 'Report submitted successfully'})
 
-# API - get all reports
 @app.route('/reports')
 def get_reports():
     conn = get_db()
@@ -100,7 +101,6 @@ def get_reports():
         })
     return jsonify(reports)
 
-# API - verify a report
 @app.route('/verify/<int:report_id>', methods=['POST'])
 def verify_report(report_id):
     conn = get_db()
@@ -110,7 +110,6 @@ def verify_report(report_id):
     conn.close()
     return jsonify({'success': True})
 
-# API - submit relief supply
 @app.route('/submit_relief', methods=['POST'])
 def submit_relief():
     data = request.form
@@ -126,7 +125,6 @@ def submit_relief():
     conn.close()
     return jsonify({'success': True})
 
-# API - get all relief supplies
 @app.route('/relief_data')
 def relief_data():
     conn = get_db()
@@ -143,6 +141,18 @@ def relief_data():
             'longitude': row[7], 'status': row[8], 'timestamp': row[9]
         })
     return jsonify(supplies)
+
+@app.route('/api/role', methods=['POST'])
+def get_role():
+    data = request.json
+    token = data.get('token')
+    try:
+        user = supabase_client.auth.get_user(token)
+        user_id = user.user.id
+        profile = supabase_client.table('profiles').select('role').eq('id', user_id).single().execute()
+        return jsonify({'role': profile.data['role'] if profile.data else 'citizen'})
+    except:
+        return jsonify({'role': 'citizen'})
 
 if __name__ == '__main__':
     get_db()
