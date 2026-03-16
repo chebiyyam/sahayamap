@@ -39,7 +39,7 @@
         .result-icon { font-size: 80px; margin-bottom: 15px; }
         .result-title { font-size: 28px; font-weight: bold; margin-bottom: 8px; }
         .result-telugu { font-size: 18px; margin-bottom: 15px; opacity: 0.8; }
-        .result-description { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; }
+        .result-description { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: left; }
         .result-safe { color: #27ae60; }
         .result-caution { color: #f39c12; }
         .result-danger { color: #e74c3c; }
@@ -56,9 +56,35 @@
         .intro-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); text-align: center; }
         .intro-icon { font-size: 60px; margin-bottom: 15px; }
         .intro-card h2 { color: #1a3a5c; font-size: 22px; margin-bottom: 8px; }
-        .intro-card p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
-        .start-btn { width: 100%; background: #1a3a5c; color: white; border: none; padding: 16px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .warning-badge { display: inline-block; background: #fff3cd; color: #856404; padding: 8px 16px; border-radius: 20px; font-size: 13px; margin-bottom: 20px; }
+        .intro-card p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
+        .warning-badge { display: inline-block; background: #fff3cd; color: #856404; padding: 8px 16px; border-radius: 20px; font-size: 13px; margin-bottom: 15px; }
+        .start-btn { width: 100%; background: #1a3a5c; color: white; border: none; padding: 16px; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
+        /* NEW — Strong disclaimer box */
+        .disclaimer-box {
+            background: #fff3cd;
+            border: 2px solid #f39c12;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .disclaimer-box h4 { color: #856404; font-size: 14px; margin-bottom: 8px; }
+        .disclaimer-box p { color: #856404; font-size: 13px; line-height: 1.6; margin-bottom: 6px; }
+        .disclaimer-box ul { color: #856404; font-size: 13px; padding-left: 20px; line-height: 1.8; }
+
+        /* NEW — Professional disclaimer at result */
+        .result-disclaimer {
+            background: #fff3cd;
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #856404;
+            text-align: left;
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
@@ -74,7 +100,21 @@
         <h2>Check Before You Enter</h2>
         <h3 style="color:#666;font-size:16px;margin-bottom:15px">లోపలికి వెళ్ళే ముందు తనిఖీ చేయండి</h3>
         <div class="warning-badge">⚠️ After floods or earthquakes only</div>
-        <p>Answer 10 simple visual questions about your home. We will tell you if it is safe to enter or not.<br><br>మీ ఇంటి గురించి 10 సాధారణ ప్రశ్నలకు సమాధానం ఇవ్వండి.</p>
+
+        <!-- STRONG DISCLAIMER -->
+        <div class="disclaimer-box">
+            <h4>⚠️ Important Disclaimer / ముఖ్యమైన హెచ్చరిక</h4>
+            <p><strong>This tool provides general guidance only. It does NOT replace a professional structural engineer's assessment.</strong></p>
+            <p>మీ భద్రత మీకే బాధ్యత. ఈ సాధనం సాధారణ మార్గదర్శకత్వం మాత్రమే అందిస్తుంది.</p>
+            <ul>
+                <li>If you are unsure about any question — answer <strong>YES</strong> (treat it as damage)</li>
+                <li>A GREEN result does NOT guarantee safety</li>
+                <li>When in doubt, <strong>do not enter</strong></li>
+                <li>Always call 1070 (AP Disaster Helpline) for professional help</li>
+            </ul>
+        </div>
+
+        <p>Answer 10 simple visual questions about your home. We will give you a general safety indication.<br><br>మీ ఇంటి గురించి 10 సాధారణ ప్రశ్నలకు సమాధానం ఇవ్వండి.</p>
         <button class="start-btn" onclick="startChecker()">Start Check / తనిఖీ ప్రారంభించండి ▶</button>
     </div>
 
@@ -97,8 +137,16 @@
             <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
         </div>
         <div class="result-description" id="result-description"></div>
+
+        <!-- RESULT DISCLAIMER — always shown -->
+        <div class="result-disclaimer">
+            ⚠️ <strong>This result is a general indication only — not a professional assessment.</strong> Do not rely solely on this tool to make safety decisions. When in doubt, call 1070 (AP Disaster Helpline) or 112 for emergency help. A qualified structural engineer should inspect any flood or earthquake damaged building before re-entry.
+            <br><br>
+            ఈ ఫలితం సాధారణ సూచన మాత్రమే. వృత్తిపరమైన నిర్మాణ నిపుణుడిని సంప్రదించండి.
+        </div>
+
         <div class="action-buttons">
-            <button class="action-btn btn-report" onclick="window.location.href='/'">🚨 Report This Damage / నష్టం నివేదించండి</button>
+            <button class="action-btn btn-report" onclick="window.location.href='/report'">🚨 Report This Damage / నష్టం నివేదించండి</button>
             <button class="action-btn btn-restart" onclick="restartChecker()">🔄 Check Again / మళ్ళీ తనిఖీ చేయండి</button>
             <button class="action-btn btn-home" onclick="window.location.href='/'">🏠 Back to Home / హోమ్‌కి వెళ్ళండి</button>
         </div>
@@ -179,25 +227,53 @@
         const scoreFill = document.getElementById('score-fill');
         setTimeout(() => { scoreFill.style.width = percentage + '%'; }, 300);
 
-        if (percentage <= 20) {
+        // MORE CONSERVATIVE thresholds — harder to get green
+        if (percentage <= 10) {
+            // SAFE — only if almost no damage signs at all
             document.getElementById('result-icon').textContent = '✅';
-            document.getElementById('result-title').innerHTML = '<span class="result-safe">SAFE TO ENTER</span>';
-            document.getElementById('result-telugu').textContent = 'లోపలికి వెళ్ళడం సురక్షితం';
-            document.getElementById('result-description').textContent = 'Your home appears structurally safe. Enter carefully and watch for any slippery floors or sharp debris.\n\nమీ ఇల్లు నిర్మాణాత్మకంగా సురక్షితంగా కనిపిస్తోంది.';
+            document.getElementById('result-title').innerHTML = '<span class="result-safe">LOW RISK</span>';
+            document.getElementById('result-telugu').textContent = 'తక్కువ ప్రమాదం — జాగ్రత్తగా లోపలికి వెళ్ళవచ్చు';
+            document.getElementById('result-description').innerHTML = `
+                <strong>Low damage signs detected.</strong> You may enter carefully, but remain alert.<br><br>
+                • Watch for slippery floors, sharp debris, and unstable furniture<br>
+                • Do not run electrical appliances until checked by an electrician<br>
+                • If anything looks wrong once inside, leave immediately<br>
+                • Check again after 24 hours for any new cracks or settling<br><br>
+                తక్కువ నష్టం సంకేతాలు గుర్తించబడ్డాయి. జాగ్రత్తగా లోపలికి వెళ్ళవచ్చు.
+            `;
             scoreFill.style.background = '#27ae60';
             resultCard.style.borderTop = '5px solid #27ae60';
-        } else if (percentage <= 50) {
+
+        } else if (percentage <= 40) {
+            // CAUTION
             document.getElementById('result-icon').textContent = '⚠️';
-            document.getElementById('result-title').innerHTML = '<span class="result-caution">CAUTION</span>';
-            document.getElementById('result-telugu').textContent = 'జాగ్రత్త అవసరం - నిపుణుడిని పిలవండి';
-            document.getElementById('result-description').textContent = 'Some damage detected. Do NOT enter until a structural engineer inspects. Call 1070 (AP Disaster Helpline).\n\nకొంత నష్టం గుర్తించబడింది. నిపుణుడు తనిఖీ చేసే వరకు లోపలికి వెళ్ళవద్దు.';
+            document.getElementById('result-title').innerHTML = '<span class="result-caution">CAUTION — GET EXPERT HELP</span>';
+            document.getElementById('result-telugu').textContent = 'జాగ్రత్త — నిపుణుడిని పిలవండి';
+            document.getElementById('result-description').innerHTML = `
+                <strong>Some damage signs detected. Do NOT enter until a structural engineer or government official inspects the building.</strong><br><br>
+                • Call 1070 (AP Disaster Helpline) immediately<br>
+                • Do not enter to collect belongings — wait for clearance<br>
+                • Keep children and elderly away from the building<br>
+                • Take photos from outside for insurance records<br><br>
+                కొంత నష్టం గుర్తించబడింది. నిపుణుడు తనిఖీ చేసే వరకు లోపలికి వెళ్ళవద్దు. వెంటనే 1070కి కాల్ చేయండి.
+            `;
             scoreFill.style.background = '#f39c12';
             resultCard.style.borderTop = '5px solid #f39c12';
+
         } else {
+            // DANGER
             document.getElementById('result-icon').textContent = '🚨';
-            document.getElementById('result-title').innerHTML = '<span class="result-danger">DANGER - DO NOT ENTER</span>';
-            document.getElementById('result-telugu').textContent = 'ప్రమాదం - లోపలికి వెళ్ళకండి';
-            document.getElementById('result-description').textContent = 'SERIOUS structural damage detected. DO NOT enter. Evacuate immediately and call 1070 (AP Disaster Helpline) or 112.\n\nతీవ్రమైన నిర్మాణ నష్టం. వెంటనే 1070కి కాల్ చేయండి.';
+            document.getElementById('result-title').innerHTML = '<span class="result-danger">DANGER — DO NOT ENTER</span>';
+            document.getElementById('result-telugu').textContent = 'ప్రమాదం — లోపలికి వెళ్ళకండి';
+            document.getElementById('result-description').innerHTML = `
+                <strong>SERIOUS structural damage detected. DO NOT enter this building under any circumstances.</strong><br><br>
+                • Evacuate the area immediately<br>
+                • Call 1070 (AP Disaster Helpline) or 112 for emergency help<br>
+                • Do not return until cleared by authorities<br>
+                • Alert neighbors about the danger<br>
+                • This building may collapse without warning<br><br>
+                తీవ్రమైన నిర్మాణ నష్టం గుర్తించబడింది. ఈ భవనంలోకి ఎట్టి పరిస్థితుల్లోనూ వెళ్ళకండి. వెంటనే 1070కి కాల్ చేయండి.
+            `;
             scoreFill.style.background = '#e74c3c';
             resultCard.style.borderTop = '5px solid #e74c3c';
         }
@@ -213,9 +289,7 @@
     }
 
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('SW registered'))
-            .catch(err => console.log('SW error:', err));
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
     }
 </script>
 </body>
