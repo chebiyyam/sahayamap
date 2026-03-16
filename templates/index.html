@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SahayamAP - Report Damage</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#1a3a5c">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -288,23 +291,21 @@
         <button class="view-map-btn" onclick="window.location.href='/map'">
             🗺️ View Live Damage Map / లైవ్ మ్యాప్ చూడండి
         </button>
-	<button class="view-map-btn" style="background:#2d7a2d;margin-top:10px" onclick="window.location.href='/safety'">
+        <button class="view-map-btn" style="background:#2d7a2d;margin-top:10px" onclick="window.location.href='/safety'">
             🏠 Home Safety Checker / ఇల్లు సురక్షితమా?
-	</button>
-
-    	<button class="view-map-btn" style="background:#8B6914;margin-top:10px" onclick="window.location.href='/relief'">
+        </button>
+        <button class="view-map-btn" style="background:#8B6914;margin-top:10px" onclick="window.location.href='/relief'">
             🤝 Relief Coordination / సహాయ సమన్వయం
         </button>
 
-	</div>
+    </div>
 </div>
+
 <script>
     let selectedDamageType = '';
 
     function selectDamage(btn, type) {
-        // Remove selected from all buttons
         document.querySelectorAll('.damage-type-btn').forEach(b => b.classList.remove('selected'));
-        // Select this one
         btn.classList.add('selected');
         selectedDamageType = type;
         document.getElementById('damage_type_input').value = type;
@@ -350,17 +351,13 @@
 
     document.getElementById('reportForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const formData = new FormData(this);
-
         try {
             const response = await fetch('/submit', {
                 method: 'POST',
                 body: formData
             });
-
             const result = await response.json();
-
             if (result.success) {
                 document.getElementById('success-msg').style.display = 'block';
                 this.reset();

@@ -1,0 +1,21 @@
+{
+    "name": "SahayamAP",
+    "short_name": "SahayamAP",
+    "description": "Flood Relief Coordination Platform for Andhra Pradesh",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#1a3a5c",
+    "theme_color": "#1a3a5c",
+    "icons": [
+        {
+            "src": "/static/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/static/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
