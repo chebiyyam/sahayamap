@@ -50,6 +50,11 @@ def safety_checker():
 def relief():
     return render_template('relief.html')
 
+# War Room government dashboard
+@app.route('/warroom')
+def warroom():
+    return render_template('warroom.html')
+
 # Serve service worker from root
 @app.route('/sw.js')
 def service_worker():
