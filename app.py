@@ -33,6 +33,88 @@ def index():
 @app.route('/map')
 def map_view():
     return render_template('map.html')
+# Safety checker page
+@app.route('/safety')
+def safety_checker():
+    return render_template('safety.html')
+# Relief coordination dashboard
+@app.route('/relief')
+def relief():
+    return render_template('relief.html')
+
+# API - submit relief supply
+@app.route('/submit_relief', methods=['POST'])
+def submit_relief():
+    data = request.form
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS relief (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            org_name TEXT,
+            contact TEXT,
+            supply_type TEXT,
+            quantity TEXT,
+            going_to TEXT,
+            latitude REAL,
+            longitude REAL,
+            status TEXT DEFAULT 'active',
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    c.execute('''
+        INSERT INTO relief (org_name, contact, supply_type, quantity, going_to, latitude, longitude)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        data.get('org_name'),
+        data.get('contact'),
+        data.get('supply_type'),
+        data.get('quantity'),
+        data.get('going_to'),
+        data.get('latitude'),
+        data.get('longitude')
+    ))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
+# API - get all relief supplies
+@app.route('/relief_data')
+def relief_data():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS relief (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            org_name TEXT,
+            contact TEXT,
+            supply_type TEXT,
+            quantity TEXT,
+            going_to TEXT,
+            latitude REAL,
+            longitude REAL,
+            status TEXT DEFAULT 'active',
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    c.execute('SELECT * FROM relief')
+    rows = c.fetchall()
+    conn.close()
+    supplies = []
+    for row in rows:
+        supplies.append({
+            'id': row[0],
+            'org_name': row[1],
+            'contact': row[2],
+            'supply_type': row[3],
+            'quantity': row[4],
+            'going_to': row[5],
+            'latitude': row[6],
+            'longitude': row[7],
+            'status': row[8],
+            'timestamp': row[9]
+        })
+    return jsonify(supplies)
 
 # API endpoint - receives damage report from form and saves to database
 @app.route('/submit', methods=['POST'])

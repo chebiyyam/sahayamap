@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SahayamAP - Relief Coordination</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body { font-family: Arial, sans-serif; background: #f0f4f8; }
+
+        .header {
+            background: #8B6914;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 { font-size: 22px; }
+        .header p { font-size: 12px; opacity: 0.8; }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: #8B6914;
+            border-bottom-color: #8B6914;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* LOG SUPPLY TAB */
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .form-card h2 {
+            color: #8B6914;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .form-group { margin-bottom: 18px; }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #8B6914;
+        }
+
+        .supply-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .supply-btn {
+            padding: 10px 6px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .supply-btn .s-emoji { font-size: 20px; display: block; margin-bottom: 3px; }
+        .supply-btn.selected { border-color: #8B6914; background: #8B6914; color: white; }
+
+        .location-box {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .loc-status { font-size: 13px; color: #666; }
+        .loc-status.found { color: #27ae60; font-weight: bold; }
+
+        .get-loc-btn {
+            background: #8B6914;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #8B6914;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        .success-msg {
+            background: #27ae60;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+            margin-top: 12px;
+        }
+
+        /* DASHBOARD TAB */
+        .dashboard-container { padding: 15px; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .stat-card .stat-num {
+            font-size: 28px;
+            font-weight: bold;
+            color: #8B6914;
+        }
+
+        .stat-card .stat-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a3a5c;
+            margin: 15px 0 10px;
+        }
+
+        .supply-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .supply-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            border-left: 4px solid #8B6914;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .supply-item.food { border-left-color: #27ae60; }
+        .supply-item.water { border-left-color: #3498db; }
+        .supply-item.medical { border-left-color: #8e44ad; }
+        .supply-item.rescue { border-left-color: #e74c3c; }
+        .supply-item.shelter { border-left-color: #f39c12; }
+        .supply-item.clothing { border-left-color: #1abc9c; }
+
+        .supply-info h4 { font-size: 14px; color: #333; margin-bottom: 4px; }
+        .supply-info p { font-size: 12px; color: #666; margin-bottom: 2px; }
+
+        .supply-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state .empty-icon { font-size: 50px; margin-bottom: 10px; }
+
+        /* MAP TAB */
+        #relief-map {
+            height: calc(100vh - 120px);
+            width: 100%;
+        }
+
+        /* Duplication warning */
+        .duplication-alert {
+            background: #fff3cd;
+            border: 2px solid #f39c12;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .duplication-alert h4 { color: #856404; font-size: 14px; margin-bottom: 5px; }
+        .duplication-alert p { color: #856404; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <h1>🤝 Relief Coordination</h1>
+        <p>సహాయ సమన్వయం - Stop Duplication, Save Lives</p>
+    </div>
+    <button class="back-btn" onclick="window.location.href='/'">← Back</button>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('log')">📦 Log Supply</div>
+    <div class="tab" onclick="switchTab('dashboard')">📊 Dashboard</div>
+    <div class="tab" onclick="switchTab('map')">🗺️ Map</div>
+</div>
+
+<!-- TAB 1: LOG SUPPLY -->
+<div class="tab-content active" id="tab-log">
+    <div class="form-container">
+        <div class="form-card">
+            <h2>📦 Log Your Relief Supply</h2>
+            <p style="color:#666;font-size:13px;margin-bottom:20px">
+                Tell us what you're providing and where — so others don't duplicate your effort.
+                <br>మీరు ఏమి అందిస్తున్నారో మరియు ఎక్కడికి వెళ్తున్నారో చెప్పండి.
+            </p>
+
+            <div class="duplication-alert" id="duplication-alert">
+                <h4>⚠️ Possible Duplication Detected!</h4>
+                <p id="duplication-msg">Another organization is already sending the same supply to this area. Consider redirecting to a different location.</p>
+            </div>
+
+            <form id="reliefForm">
+
+                <!-- Organization Name -->
+                <div class="form-group">
+                    <label>Organization / Your Name (సంస్థ పేరు)</label>
+                    <input type="text" name="org_name" placeholder="e.g. Red Cross, Helping Hands NGO, John" required>
+                </div>
+
+                <!-- Contact -->
+                <div class="form-group">
+                    <label>Contact Number (సంప్రదింపు నంబర్)</label>
+                    <input type="tel" name="contact" placeholder="Phone number for coordination">
+                </div>
+
+                <!-- Supply Type -->
+                <div class="form-group">
+                    <label>Type of Supply (సరఫరా రకం)</label>
+                    <div class="supply-types">
+                        <div class="supply-btn" onclick="selectSupply(this, 'Food')">
+                            <span class="s-emoji">🍚</span>
+                            Food<br><small>ఆహారం</small>
+                        </div>
+                        <div class="supply-btn" onclick="selectSupply(this, 'Water')">
+                            <span class="s-emoji">💧</span>
+                            Water<br><small>నీరు</small>
+                        </div>
+                        <div class="supply-btn" onclick="selectSupply(this, 'Medical')">
+                            <span class="s-emoji">💊</span>
+                            Medical<br><small>వైద్యం</small>
+                        </div>
+                        <div class="supply-btn" onclick="selectSupply(this, 'Rescue')">
+                            <span class="s-emoji">🚤</span>
+                            Rescue<br><small>రెస్క్యూ</small>
+                        </div>
+                        <div class="supply-btn" onclick="selectSupply(this, 'Shelter')">
+                            <span class="s-emoji">⛺</span>
+                            Shelter<br><small>ఆశ్రయం</small>
+                        </div>
+                        <div class="supply-btn" onclick="selectSupply(this, 'Clothing')">
+                            <span class="s-emoji">👕</span>
+                            Clothing<br><small>దుస్తులు</small>
+                        </div>
+                    </div>
+                    <input type="hidden" name="supply_type" id="supply_type_input" required>
+                </div>
+
+                <!-- Quantity -->
+                <div class="form-group">
+                    <label>Quantity / How Much (పరిమాణం)</label>
+                    <input type="text" name="quantity" placeholder="e.g. 200 food packets, 50 water cans" required>
+                </div>
+
+                <!-- Going To -->
+                <div class="form-group">
+                    <label>Going To / Destination (గమ్యస్థానం)</label>
+                    <input type="text" name="going_to" placeholder="e.g. Vijayawada Ward 5, Eluru Village" required>
+                </div>
+
+                <!-- Location -->
+                <div class="form-group">
+                    <label>Your Current Location (మీ ప్రస్తుత స్థానం)</label>
+                    <div class="location-box">
+                        <p class="loc-status" id="relief-loc-status">📍 Click to get your location</p>
+                        <button type="button" class="get-loc-btn" onclick="getReliefLocation()">
+                            Get My Location
+                        </button>
+                    </div>
+                    <input type="hidden" name="latitude" id="relief-lat">
+                    <input type="hidden" name="longitude" id="relief-lng">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    ✅ Log This Supply / సరఫరా నమోదు చేయండి
+                </button>
+
+            </form>
+
+            <div class="success-msg" id="relief-success">
+                ✅ Supply logged! Thank you for coordinating.<br>
+                సరఫరా నమోదు చేయబడింది! సమన్వయానికి ధన్యవాదాలు.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 2: DASHBOARD -->
+<div class="tab-content" id="tab-dashboard">
+    <div class="dashboard-container">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-num" id="total-supplies">0</div>
+                <div class="stat-label">Total Supplies Logged</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="total-orgs">0</div>
+                <div class="stat-label">Organizations Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-num" id="total-areas">0</div>
+                <div class="stat-label">Areas Being Served</div>
+            </div>
+        </div>
+
+        <!-- Duplication Warning Section -->
+        <div id="duplication-section"></div>
+
+        <!-- All Supplies -->
+        <div class="section-title">📦 All Active Relief Supplies</div>
+        <div class="supply-list" id="supply-list">
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <p>No supplies logged yet.</p>
+                <p>NGOs and samaritans — log your supply in the Log tab!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB 3: MAP -->
+<div class="tab-content" id="tab-map">
+    <div id="relief-map"></div>
+</div>
+
+<script>
+    let selectedSupplyType = '';
+    let reliefMap = null;
+    let allSupplies = [];
+
+    // Tab switching
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        document.getElementById('tab-' + tab).classList.add('active');
+        event.target.classList.add('active');
+
+        if (tab === 'map') {
+            initReliefMap();
+        }
+        if (tab === 'dashboard') {
+            loadDashboard();
+        }
+    }
+
+    function selectSupply(btn, type) {
+        document.querySelectorAll('.supply-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedSupplyType = type;
+        document.getElementById('supply_type_input').value = type;
+        checkDuplication(type);
+    }
+
+    function getReliefLocation() {
+        const status = document.getElementById('relief-loc-status');
+        status.textContent = '⏳ Getting location...';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                function(pos) {
+                    document.getElementById('relief-lat').value = pos.coords.latitude;
+                    document.getElementById('relief-lng').value = pos.coords.longitude;
+                    status.textContent = '✅ Location found!';
+                    status.className = 'loc-status found';
+                },
+                function() {
+                    status.textContent = '❌ Could not get location';
+                }
+            );
+        }
+    }
+
+    // Check if another org is already sending same supply to same area
+    async function checkDuplication(supplyType) {
+        const goingTo = document.querySelector('[name="going_to"]').value;
+        if (!goingTo || !supplyType) return;
+
+        const duplicates = allSupplies.filter(s =>
+            s.supply_type === supplyType &&
+            s.going_to.toLowerCase().includes(goingTo.toLowerCase().split(' ')[0])
+        );
+
+        const alert = document.getElementById('duplication-alert');
+        if (duplicates.length > 0) {
+            document.getElementById('duplication-msg').textContent =
+                `${duplicates[0].org_name} is already sending ${supplyType} to ${duplicates[0].going_to}. Consider a different area!`;
+            alert.style.display = 'block';
+        } else {
+            alert.style.display = 'none';
+        }
+    }
+
+    // Submit relief form
+    document.getElementById('reliefForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+
+        try {
+            const response = await fetch('/submit_relief', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.success) {
+                document.getElementById('relief-success').style.display = 'block';
+                this.reset();
+                document.querySelectorAll('.supply-btn').forEach(b => b.classList.remove('selected'));
+                document.getElementById('relief-loc-status').textContent = '📍 Click to get your location';
+                document.getElementById('relief-loc-status').className = 'loc-status';
+                loadSupplies();
+            }
+        } catch (err) {
+            alert('Error submitting. Please try again.');
+        }
+    });
+
+    // Load all supplies
+    async function loadSupplies() {
+        try {
+            const response = await fetch('/relief_data');
+            allSupplies = await response.json();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // Load dashboard
+    async function loadDashboard() {
+        await loadSupplies();
+
+        document.getElementById('total-supplies').textContent = allSupplies.length;
+
+        const orgs = new Set(allSupplies.map(s => s.org_name)).size;
+        document.getElementById('total-orgs').textContent = orgs;
+
+        const areas = new Set(allSupplies.map(s => s.going_to)).size;
+        document.getElementById('total-areas').textContent = areas;
+
+        // Check for duplications
+        const dupSection = document.getElementById('duplication-section');
+        const areaSupplyMap = {};
+        allSupplies.forEach(s => {
+            const key = s.going_to + '|' + s.supply_type;
+            if (!areaSupplyMap[key]) areaSupplyMap[key] = [];
+            areaSupplyMap[key].push(s);
+        });
+
+        const duplications = Object.entries(areaSupplyMap).filter(([k, v]) => v.length > 1);
+
+        if (duplications.length > 0) {
+            dupSection.innerHTML = `
+                <div style="background:#fff3cd;border:2px solid #f39c12;border-radius:10px;padding:15px;margin-bottom:15px">
+                    <h4 style="color:#856404;margin-bottom:8px">⚠️ ${duplications.length} Duplication(s) Detected!</h4>
+                    ${duplications.map(([key, supplies]) => {
+                        const [area, type] = key.split('|');
+                        return `<p style="color:#856404;font-size:12px;margin-bottom:4px">
+                            • <strong>${type}</strong> going to <strong>${area}</strong>:
+                            ${supplies.map(s => s.org_name).join(', ')}
+                        </p>`;
+                    }).join('')}
+                    <p style="color:#856404;font-size:11px;margin-top:8px">Contact these organizations to redirect supplies to uncovered areas.</p>
+                </div>
+            `;
+        } else {
+            dupSection.innerHTML = `
+                <div style="background:#d4edda;border:2px solid #27ae60;border-radius:10px;padding:12px;margin-bottom:15px">
+                    <p style="color:#155724;font-size:13px">✅ No duplications detected. Relief is well coordinated!</p>
+                </div>
+            `;
+        }
+
+        // Supply list
+        const supplyColors = {
+            'Food': '#27ae60', 'Water': '#3498db', 'Medical': '#8e44ad',
+            'Rescue': '#e74c3c', 'Shelter': '#f39c12', 'Clothing': '#1abc9c'
+        };
+        const supplyEmojis = {
+            'Food': '🍚', 'Water': '💧', 'Medical': '💊',
+            'Rescue': '🚤', 'Shelter': '⛺', 'Clothing': '👕'
+        };
+
+        const list = document.getElementById('supply-list');
+        if (allSupplies.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>No supplies logged yet.</p>
+                </div>`;
+            return;
+        }
+
+        list.innerHTML = allSupplies.slice().reverse().map(s => `
+            <div class="supply-item ${s.supply_type.toLowerCase()}">
+                <div class="supply-info">
+                    <h4>${supplyEmojis[s.supply_type] || '📦'} ${s.org_name}</h4>
+                    <p>📍 Going to: <strong>${s.going_to}</strong></p>
+                    <p>📦 ${s.quantity}</p>
+                    ${s.contact ? `<p>📞 ${s.contact}</p>` : ''}
+                    <p style="color:#999;font-size:11px">🕐 ${s.timestamp}</p>
+                </div>
+                <span class="supply-badge" style="background:${supplyColors[s.supply_type] || '#8B6914'}">
+                    ${s.supply_type}
+                </span>
+            </div>
+        `).join('');
+    }
+
+    // Initialize relief map
+    function initReliefMap() {
+        if (reliefMap) return;
+
+        reliefMap = L.map('relief-map').setView([16.5, 80.6], 7);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(reliefMap);
+
+        loadReliefMapData();
+    }
+
+    async function loadReliefMapData() {
+        await loadSupplies();
+
+        const supplyColors = {
+            'Food': '#27ae60', 'Water': '#3498db', 'Medical': '#8e44ad',
+            'Rescue': '#e74c3c', 'Shelter': '#f39c12', 'Clothing': '#1abc9c'
+        };
+
+        allSupplies.forEach(supply => {
+            if (supply.latitude && supply.longitude) {
+                L.circleMarker([supply.latitude, supply.longitude], {
+                    radius: 10,
+                    fillColor: supplyColors[supply.supply_type] || '#8B6914',
+                    color: 'white',
+                    weight: 2,
+                    fillOpacity: 0.9
+                }).bindPopup(`
+                    <div style="min-width:180px">
+                        <h3 style="color:#8B6914;margin-bottom:6px">📦 ${supply.supply_type}</h3>
+                        <p><strong>${supply.org_name}</strong></p>
+                        <p>→ Going to: ${supply.going_to}</p>
+                        <p>${supply.quantity}</p>
+                        ${supply.contact ? `<p>📞 ${supply.contact}</p>` : ''}
+                    </div>
+                `).addTo(reliefMap);
+            }
+        });
+    }
+
+    // Load supplies on page load
+    loadSupplies();
+</script>
+
+</body>
+</html>
