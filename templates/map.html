@@ -9,6 +9,7 @@
     <link rel="apple-touch-icon" href="/static/icon-192.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f0f4f8; }
@@ -109,12 +110,44 @@
             const response = await fetch('/reports');
             const reports = await response.json();
             allReports = reports;
-            map.eachLayer(layer => { if (layer instanceof L.CircleMarker) map.removeLayer(layer); });
+            map.eachLayer(layer => {
+    if (layer instanceof L.CircleMarker) map.removeLayer(layer);
+});
             const counts = { 'House Damage': 0, 'Road Blocked': 0, 'Need Food/Water': 0, 'Medical Emergency': 0, 'People Trapped': 0, 'No Electricity': 0 };
-            reports.forEach(report => {
-                if (report.latitude && report.longitude) createMarker(report).addTo(map);
-                if (counts.hasOwnProperty(report.damage_type)) counts[report.damage_type]++;
-            });
+            // Heat map data points
+const heatPoints = [];
+
+reports.forEach(report => {
+    if (report.latitude && report.longitude) {
+        createMarker(report).addTo(map);
+        // Add to heatmap with intensity based on damage severity
+        const intensity = report.damage_type === 'People Trapped' ? 1.0 :
+                         report.damage_type === 'Medical Emergency' ? 0.9 :
+                         report.damage_type === 'House Damage' ? 0.7 :
+                         report.damage_type === 'Need Food/Water' ? 0.6 : 0.5;
+        heatPoints.push([report.latitude, report.longitude, intensity]);
+    }
+    if (counts.hasOwnProperty(report.damage_type)) counts[report.damage_type]++;
+});
+
+// Remove old heatmap if exists
+if (window.heatLayer) map.removeLayer(window.heatLayer);
+
+// Add heatmap layer if we have points
+if (heatPoints.length > 0) {
+    window.heatLayer = L.heatLayer(heatPoints, {
+        radius: 40,
+        blur: 25,
+        maxZoom: 10,
+        gradient: {
+            0.0: 'blue',
+            0.3: 'cyan',
+            0.5: 'yellow',
+            0.7: 'orange',
+            1.0: 'red'
+        }
+    }).addTo(map);
+}
             document.getElementById('count-house').textContent = counts['House Damage'] + ' House Damage';
             document.getElementById('count-road').textContent = counts['Road Blocked'] + ' Road Blocked';
             document.getElementById('count-food').textContent = counts['Need Food/Water'] + ' Need Food/Water';
