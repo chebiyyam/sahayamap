@@ -148,7 +148,7 @@
     setInterval(loadReports, 30000);
 
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/static/sw.js')
+        navigator.serviceWorker.register('/sw.js')
             .then(() => console.log('SW registered'))
             .catch(err => console.log('SW error:', err));
     }

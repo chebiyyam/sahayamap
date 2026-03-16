@@ -9,186 +9,48 @@
     <link rel="apple-touch-icon" href="/static/icon-192.png">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f4f8;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: #1a3a5c;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
+        body { font-family: Arial, sans-serif; background: #f0f4f8; min-height: 100vh; }
+        .header { background: #1a3a5c; color: white; padding: 20px; text-align: center; }
         .header h1 { font-size: 28px; }
         .header p { font-size: 14px; opacity: 0.8; margin-top: 5px; }
-
-        .container {
-            max-width: 600px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .card h2 {
-            color: #1a3a5c;
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #1a3a5c;
-        }
-
+        .container { max-width: 600px; margin: 30px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .card h2 { color: #1a3a5c; margin-bottom: 20px; font-size: 20px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; color: #333; margin-bottom: 8px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #1a3a5c; }
         textarea { height: 100px; resize: vertical; }
-
-        .damage-types {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .damage-type-btn {
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            background: white;
-            cursor: pointer;
-            text-align: center;
-            font-size: 13px;
-            transition: all 0.3s;
-        }
-
+        .damage-types { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+        .damage-type-btn { padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; background: white; cursor: pointer; text-align: center; font-size: 13px; transition: all 0.3s; }
         .damage-type-btn:hover { border-color: #1a3a5c; }
-        .damage-type-btn.selected { 
-            border-color: #1a3a5c; 
-            background: #1a3a5c;
-            color: white;
-        }
-
+        .damage-type-btn.selected { border-color: #1a3a5c; background: #1a3a5c; color: white; }
         .damage-type-btn .emoji { font-size: 24px; display: block; margin-bottom: 5px; }
-
-        .location-box {
-            background: #f0f4f8;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-        }
-
+        .location-box { background: #f0f4f8; border-radius: 8px; padding: 15px; text-align: center; }
         .location-status { font-size: 14px; color: #666; }
         .location-status.found { color: #2d7a2d; font-weight: bold; }
         .location-status.error { color: #c0392b; }
-
-        .get-location-btn {
-            background: #1a3a5c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .photo-upload {
-            border: 2px dashed #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-
+        .get-location-btn { background: #1a3a5c; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+        .photo-upload { border: 2px dashed #e0e0e0; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: border-color 0.3s; }
         .photo-upload:hover { border-color: #1a3a5c; }
         .photo-upload .upload-icon { font-size: 40px; }
         .photo-upload p { color: #666; font-size: 13px; margin-top: 8px; }
-
         #photo-input { display: none; }
-
-        .preview-img {
-            width: 100%;
-            border-radius: 8px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .submit-btn {
-            width: 100%;
-            background: #c0392b;
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
+        .preview-img { width: 100%; border-radius: 8px; margin-top: 10px; display: none; }
+        .submit-btn { width: 100%; background: #c0392b; color: white; border: none; padding: 16px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
         .submit-btn:hover { background: #a93226; }
-
-        .view-map-btn {
-            width: 100%;
-            background: #1a3a5c;
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-
+        .view-map-btn { width: 100%; background: #1a3a5c; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; transition: background 0.3s; }
         .view-map-btn:hover { background: #152d47; }
-
-        .success-message {
-            background: #2d7a2d;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            display: none;
-            margin-top: 15px;
-        }
-
+        .success-message { background: #2d7a2d; color: white; padding: 15px; border-radius: 8px; text-align: center; display: none; margin-top: 15px; }
+        .offline-banner { background: #f39c12; color: white; padding: 10px; text-align: center; font-size: 13px; display: none; }
         #location-lat, #location-lng { display: none; }
     </style>
 </head>
 <body>
+
+<div class="offline-banner" id="offline-banner">
+    ⚠️ You are offline. Some features may not work. / మీరు ఆఫ్‌లైన్‌లో ఉన్నారు.
+</div>
 
 <div class="header">
     <h1>🌊 SahayamAP</h1>
@@ -198,22 +60,15 @@
 <div class="container">
     <div class="card">
         <h2>📍 Report Damage in Your Area</h2>
-        
         <form id="reportForm" enctype="multipart/form-data">
-            
-            <!-- Name -->
             <div class="form-group">
                 <label>Your Name (మీ పేరు)</label>
                 <input type="text" name="name" placeholder="Enter your name" required>
             </div>
-
-            <!-- Phone -->
             <div class="form-group">
                 <label>Phone Number (ఫోన్ నంబర్)</label>
                 <input type="tel" name="phone" placeholder="Enter your phone number">
             </div>
-
-            <!-- Damage Type -->
             <div class="form-group">
                 <label>Type of Damage (నష్టం రకం)</label>
                 <div class="damage-types">
@@ -244,27 +99,19 @@
                 </div>
                 <input type="hidden" name="damage_type" id="damage_type_input" required>
             </div>
-
-            <!-- Description -->
             <div class="form-group">
                 <label>Description (వివరణ) - Optional</label>
                 <textarea name="description" placeholder="Describe the situation in more detail..."></textarea>
             </div>
-
-            <!-- Location -->
             <div class="form-group">
                 <label>Your Location (మీ స్థానం)</label>
                 <div class="location-box">
                     <p class="location-status" id="location-status">📍 Click below to get your location</p>
-                    <button type="button" class="get-location-btn" onclick="getLocation()">
-                        Get My Location
-                    </button>
+                    <button type="button" class="get-location-btn" onclick="getLocation()">Get My Location</button>
                 </div>
                 <input type="hidden" name="latitude" id="location-lat">
                 <input type="hidden" name="longitude" id="location-lng">
             </div>
-
-            <!-- Photo -->
             <div class="form-group">
                 <label>Photo of Damage (నష్టం ఫోటో) - Optional</label>
                 <div class="photo-upload" onclick="document.getElementById('photo-input').click()">
@@ -275,47 +122,35 @@
                 <input type="file" id="photo-input" name="photo" accept="image/*" capture="environment" onchange="previewPhoto(this)">
                 <img id="photo-preview" class="preview-img" alt="Preview">
             </div>
-
-            <!-- Submit -->
-            <button type="submit" class="submit-btn">
-                🚨 Submit Report / నివేదిక సమర్పించండి
-            </button>
-
+            <button type="submit" class="submit-btn">🚨 Submit Report / నివేదిక సమర్పించండి</button>
         </form>
-
         <div class="success-message" id="success-msg">
             ✅ Report submitted! Help is on the way.<br>
             నివేదిక సమర్పించబడింది! సహాయం వస్తోంది.
         </div>
-
-        <button class="view-map-btn" onclick="window.location.href='/map'">
-            🗺️ View Live Damage Map / లైవ్ మ్యాప్ చూడండి
-        </button>
-        <button class="view-map-btn" style="background:#2d7a2d;margin-top:10px" onclick="window.location.href='/safety'">
-            🏠 Home Safety Checker / ఇల్లు సురక్షితమా?
-        </button>
-        <button class="view-map-btn" style="background:#8B6914;margin-top:10px" onclick="window.location.href='/relief'">
-            🤝 Relief Coordination / సహాయ సమన్వయం
-        </button>
-
+        <button class="view-map-btn" onclick="window.location.href='/map'">🗺️ View Live Damage Map / లైవ్ మ్యాప్ చూడండి</button>
+        <button class="view-map-btn" style="background:#2d7a2d;margin-top:10px" onclick="window.location.href='/safety'">🏠 Home Safety Checker / ఇల్లు సురక్షితమా?</button>
+        <button class="view-map-btn" style="background:#8B6914;margin-top:10px" onclick="window.location.href='/relief'">🤝 Relief Coordination / సహాయ సమన్వయం</button>
     </div>
 </div>
 
 <script>
-    let selectedDamageType = '';
+    // Offline detection
+    window.addEventListener('online', () => document.getElementById('offline-banner').style.display = 'none');
+    window.addEventListener('offline', () => document.getElementById('offline-banner').style.display = 'block');
+    if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
 
+    let selectedDamageType = '';
     function selectDamage(btn, type) {
         document.querySelectorAll('.damage-type-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         selectedDamageType = type;
         document.getElementById('damage_type_input').value = type;
     }
-
     function getLocation() {
         const status = document.getElementById('location-status');
         status.textContent = '⏳ Getting your location...';
         status.className = 'location-status';
-
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 function(position) {
@@ -336,7 +171,6 @@
             status.className = 'location-status error';
         }
     }
-
     function previewPhoto(input) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
@@ -348,15 +182,11 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
-
     document.getElementById('reportForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const formData = new FormData(this);
         try {
-            const response = await fetch('/submit', {
-                method: 'POST',
-                body: formData
-            });
+            const response = await fetch('/submit', { method: 'POST', body: formData });
             const result = await response.json();
             if (result.success) {
                 document.getElementById('success-msg').style.display = 'block';
@@ -367,10 +197,14 @@
                 document.getElementById('location-status').className = 'location-status';
             }
         } catch (error) {
-            alert('Error submitting report. Please try again.');
+            alert('You are offline. Please try again when connected. / ఇంటర్నెట్ కనెక్షన్ లేదు.');
         }
     });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('SW registered'))
+            .catch(err => console.log('SW error:', err));
+    }
 </script>
-
 </body>
 </html>

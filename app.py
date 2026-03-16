@@ -170,7 +170,10 @@ def get_reports():
         })
     
     return jsonify(reports)
-
+# Serve service worker from root so PWA offline works
+@app.route('/sw.js')
+def service_worker():
+    return app.send_static_file('sw.js'), 200, {'Content-Type': 'application/javascript'}
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
