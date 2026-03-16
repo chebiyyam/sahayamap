@@ -4,244 +4,93 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SahayamAP - Live Damage Map</title>
-    
-    <!-- Leaflet.js - free open source map library, works without Google Maps API -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#1a3a5c">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body { font-family: Arial, sans-serif; background: #f0f4f8; }
-
-        .header {
-            background: #1a3a5c;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .header { background: #1a3a5c; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { font-size: 22px; }
         .header p { font-size: 12px; opacity: 0.8; }
-
-        .report-btn {
-            background: #c0392b;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .stats-bar {
-            background: white;
-            padding: 12px 20px;
-            display: flex;
-            gap: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-            font-size: 13px;
-        }
-
-        .stat-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        #map {
-            height: calc(100vh - 140px);
-            width: 100%;
-        }
-
-        .report-panel {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-radius: 16px 16px 0 0;
-            padding: 20px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            max-height: 70vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
+        .report-btn { background: #c0392b; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .stats-bar { background: white; padding: 12px 20px; display: flex; gap: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow-x: auto; }
+        .stat { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 13px; }
+        .stat-dot { width: 12px; height: 12px; border-radius: 50%; }
+        #map { height: calc(100vh - 140px); width: 100%; }
+        .report-panel { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-radius: 16px 16px 0 0; padding: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); transform: translateY(100%); transition: transform 0.3s ease; max-height: 70vh; overflow-y: auto; z-index: 1000; }
         .report-panel.open { transform: translateY(0); }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
+        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .panel-header h3 { color: #1a3a5c; font-size: 18px; }
-
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .report-item {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 12px;
-            border-left: 4px solid #1a3a5c;
-        }
-
+        .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+        .report-item { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 12px; border-left: 4px solid #1a3a5c; }
         .report-item.house { border-left-color: #e74c3c; }
         .report-item.road { border-left-color: #f39c12; }
         .report-item.food { border-left-color: #27ae60; }
         .report-item.medical { border-left-color: #8e44ad; }
         .report-item.trapped { border-left-color: #c0392b; }
         .report-item.electricity { border-left-color: #f1c40f; }
-
         .report-item h4 { font-size: 15px; margin-bottom: 5px; }
         .report-item p { font-size: 13px; color: #666; margin-bottom: 3px; }
         .report-item .timestamp { font-size: 11px; color: #999; }
-
-        .damage-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 8px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .total-count {
-            background: #c0392b;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
+        .damage-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; color: white; margin-bottom: 8px; }
+        .loading { text-align: center; padding: 40px; color: #666; }
+        .total-count { background: #c0392b; color: white; padding: 4px 10px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .offline-banner { background: #f39c12; color: white; padding: 10px; text-align: center; font-size: 13px; display: none; }
     </style>
 </head>
 <body>
+
+<div class="offline-banner" id="offline-banner">
+    ⚠️ You are offline. Map may not load. / మీరు ఆఫ్‌లైన్‌లో ఉన్నారు.
+</div>
 
 <div class="header">
     <div>
         <h1>🌊 SahayamAP Live Map</h1>
         <p>Real-time damage reports across Andhra Pradesh</p>
     </div>
-    <button class="report-btn" onclick="window.location.href='/'">
-        + Report
-    </button>
+    <button class="report-btn" onclick="window.location.href='/'">+ Report</button>
 </div>
 
 <div class="stats-bar" id="stats-bar">
-    <div class="stat">
-        <div class="stat-dot" style="background:#e74c3c"></div>
-        <span id="count-house">0 House Damage</span>
-    </div>
-    <div class="stat">
-        <div class="stat-dot" style="background:#f39c12"></div>
-        <span id="count-road">0 Road Blocked</span>
-    </div>
-    <div class="stat">
-        <div class="stat-dot" style="background:#27ae60"></div>
-        <span id="count-food">0 Need Food/Water</span>
-    </div>
-    <div class="stat">
-        <div class="stat-dot" style="background:#8e44ad"></div>
-        <span id="count-medical">0 Medical</span>
-    </div>
-    <div class="stat">
-        <div class="stat-dot" style="background:#c0392b"></div>
-        <span id="count-trapped">0 Trapped</span>
-    </div>
-    <div class="stat">
-        <div class="stat-dot" style="background:#f1c40f"></div>
-        <span id="count-electricity">0 No Electricity</span>
-    </div>
+    <div class="stat"><div class="stat-dot" style="background:#e74c3c"></div><span id="count-house">0 House Damage</span></div>
+    <div class="stat"><div class="stat-dot" style="background:#f39c12"></div><span id="count-road">0 Road Blocked</span></div>
+    <div class="stat"><div class="stat-dot" style="background:#27ae60"></div><span id="count-food">0 Need Food/Water</span></div>
+    <div class="stat"><div class="stat-dot" style="background:#8e44ad"></div><span id="count-medical">0 Medical</span></div>
+    <div class="stat"><div class="stat-dot" style="background:#c0392b"></div><span id="count-trapped">0 Trapped</span></div>
+    <div class="stat"><div class="stat-dot" style="background:#f1c40f"></div><span id="count-electricity">0 No Electricity</span></div>
 </div>
 
 <div id="map"></div>
 
-<!-- Sliding panel showing all reports -->
 <div class="report-panel" id="report-panel">
     <div class="panel-header">
         <h3>📋 All Reports <span class="total-count" id="total-count">0</span></h3>
         <button class="close-btn" onclick="closePanel()">×</button>
     </div>
-    <div id="reports-list">
-        <div class="loading">Loading reports...</div>
-    </div>
+    <div id="reports-list"><div class="loading">Loading reports...</div></div>
 </div>
 
 <script>
-    // Color for each damage type
-    const damageColors = {
-        'House Damage': '#e74c3c',
-        'Road Blocked': '#f39c12',
-        'Need Food/Water': '#27ae60',
-        'Medical Emergency': '#8e44ad',
-        'People Trapped': '#c0392b',
-        'No Electricity': '#f1c40f'
-    };
+    window.addEventListener('online', () => document.getElementById('offline-banner').style.display = 'none');
+    window.addEventListener('offline', () => document.getElementById('offline-banner').style.display = 'block');
+    if (!navigator.onLine) document.getElementById('offline-banner').style.display = 'block';
 
-    const damageEmojis = {
-        'House Damage': '🏠',
-        'Road Blocked': '🚧',
-        'Need Food/Water': '🍚',
-        'Medical Emergency': '🏥',
-        'People Trapped': '🆘',
-        'No Electricity': '⚡'
-    };
+    const damageColors = { 'House Damage': '#e74c3c', 'Road Blocked': '#f39c12', 'Need Food/Water': '#27ae60', 'Medical Emergency': '#8e44ad', 'People Trapped': '#c0392b', 'No Electricity': '#f1c40f' };
+    const damageEmojis = { 'House Damage': '🏠', 'Road Blocked': '🚧', 'Need Food/Water': '🍚', 'Medical Emergency': '🏥', 'People Trapped': '🆘', 'No Electricity': '⚡' };
 
-    // Initialize map centered on Andhra Pradesh
     const map = L.map('map').setView([16.5, 80.6], 7);
-
-    // Add OpenStreetMap tiles (completely free, no API key needed)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
 
     let allReports = [];
 
-    // Create a colored circle marker for each damage type
     function createMarker(report) {
         const color = damageColors[report.damage_type] || '#1a3a5c';
         const emoji = damageEmojis[report.damage_type] || '📍';
-
-        const marker = L.circleMarker([report.latitude, report.longitude], {
-            radius: 12,
-            fillColor: color,
-            color: 'white',
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.9
-        });
-
-        // Popup that shows when you click a pin
+        const marker = L.circleMarker([report.latitude, report.longitude], { radius: 12, fillColor: color, color: 'white', weight: 2, opacity: 1, fillOpacity: 0.9 });
         marker.bindPopup(`
             <div style="min-width:200px">
                 <h3 style="color:${color};margin-bottom:8px">${emoji} ${report.damage_type}</h3>
@@ -252,43 +101,20 @@
                 ${report.photo ? `<img src="/static/${report.photo}" style="width:100%;border-radius:6px;margin-top:8px">` : ''}
             </div>
         `);
-
         return marker;
     }
 
-    // Load all reports from Flask backend
     async function loadReports() {
         try {
             const response = await fetch('/reports');
             const reports = await response.json();
             allReports = reports;
-
-            // Clear existing markers
-            map.eachLayer(layer => {
-                if (layer instanceof L.CircleMarker) map.removeLayer(layer);
-            });
-
-            // Count by type
-            const counts = {
-                'House Damage': 0,
-                'Road Blocked': 0,
-                'Need Food/Water': 0,
-                'Medical Emergency': 0,
-                'People Trapped': 0,
-                'No Electricity': 0
-            };
-
-            // Add markers to map
+            map.eachLayer(layer => { if (layer instanceof L.CircleMarker) map.removeLayer(layer); });
+            const counts = { 'House Damage': 0, 'Road Blocked': 0, 'Need Food/Water': 0, 'Medical Emergency': 0, 'People Trapped': 0, 'No Electricity': 0 };
             reports.forEach(report => {
-                if (report.latitude && report.longitude) {
-                    createMarker(report).addTo(map);
-                }
-                if (counts.hasOwnProperty(report.damage_type)) {
-                    counts[report.damage_type]++;
-                }
+                if (report.latitude && report.longitude) createMarker(report).addTo(map);
+                if (counts.hasOwnProperty(report.damage_type)) counts[report.damage_type]++;
             });
-
-            // Update stats bar
             document.getElementById('count-house').textContent = counts['House Damage'] + ' House Damage';
             document.getElementById('count-road').textContent = counts['Road Blocked'] + ' Road Blocked';
             document.getElementById('count-food').textContent = counts['Need Food/Water'] + ' Need Food/Water';
@@ -296,37 +122,17 @@
             document.getElementById('count-trapped').textContent = counts['People Trapped'] + ' Trapped';
             document.getElementById('count-electricity').textContent = counts['No Electricity'] + ' No Electricity';
             document.getElementById('total-count').textContent = reports.length;
-
-            // Update reports list in panel
             updateReportsList(reports);
-
-        } catch (error) {
-            console.error('Error loading reports:', error);
-        }
+        } catch (error) { console.error('Error loading reports:', error); }
     }
 
     function updateReportsList(reports) {
         const list = document.getElementById('reports-list');
-
-        if (reports.length === 0) {
-            list.innerHTML = '<div class="loading">No reports yet. Be the first to report damage.</div>';
-            return;
-        }
-
-        const typeClass = {
-            'House Damage': 'house',
-            'Road Blocked': 'road',
-            'Need Food/Water': 'food',
-            'Medical Emergency': 'medical',
-            'People Trapped': 'trapped',
-            'No Electricity': 'electricity'
-        };
-
+        if (reports.length === 0) { list.innerHTML = '<div class="loading">No reports yet.</div>'; return; }
+        const typeClass = { 'House Damage': 'house', 'Road Blocked': 'road', 'Need Food/Water': 'food', 'Medical Emergency': 'medical', 'People Trapped': 'trapped', 'No Electricity': 'electricity' };
         list.innerHTML = reports.slice().reverse().map(report => `
             <div class="report-item ${typeClass[report.damage_type] || ''}">
-                <span class="damage-badge" style="background:${damageColors[report.damage_type] || '#1a3a5c'}">
-                    ${damageEmojis[report.damage_type] || '📍'} ${report.damage_type}
-                </span>
+                <span class="damage-badge" style="background:${damageColors[report.damage_type] || '#1a3a5c'}">${damageEmojis[report.damage_type] || '📍'} ${report.damage_type}</span>
                 <h4>${report.name || 'Anonymous'}</h4>
                 ${report.description ? `<p>${report.description}</p>` : ''}
                 ${report.phone ? `<p>📞 ${report.phone}</p>` : ''}
@@ -335,19 +141,17 @@
         `).join('');
     }
 
-    function closePanel() {
-        document.getElementById('report-panel').classList.remove('open');
-    }
+    function closePanel() { document.getElementById('report-panel').classList.remove('open'); }
+    map.on('click', function() { document.getElementById('report-panel').classList.add('open'); });
 
-    // Click on map to show all reports panel
-    map.on('click', function() {
-        document.getElementById('report-panel').classList.add('open');
-    });
-
-    // Load reports immediately and refresh every 30 seconds
     loadReports();
     setInterval(loadReports, 30000);
-</script>
 
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/sw.js')
+            .then(() => console.log('SW registered'))
+            .catch(err => console.log('SW error:', err));
+    }
+</script>
 </body>
 </html>
