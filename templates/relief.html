@@ -615,7 +615,16 @@
 
         loadReliefMapData();
     }
-
+// Auth check — redirect to login if not NGO/government role
+async function checkAuth() {
+    const role = localStorage.getItem('sahayam_role');
+    const token = localStorage.getItem('sahayam_token');
+    if (!token || role === 'citizen') {
+        window.location.href = '/login';
+        return;
+    }
+}
+checkAuth();
     async function loadReliefMapData() {
         await loadSupplies();
 

@@ -11,319 +11,72 @@
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0e1a;
-            color: #e0e6f0;
-            min-height: 100vh;
-        }
-
-        /* HEADER */
-        .header {
-            background: #0d1220;
-            border-bottom: 2px solid #1e3a5f;
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        body { font-family: 'Courier New', monospace; background: #0a0e1a; color: #e0e6f0; min-height: 100vh; }
+        .header { background: #0d1220; border-bottom: 2px solid #1e3a5f; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 16px; }
-
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-            color: #F5C842;
-            letter-spacing: 2px;
-        }
-
-        .status-badge {
-            background: #0d3320;
-            border: 1px solid #27ae60;
-            color: #27ae60;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 11px;
-            letter-spacing: 1px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-
+        .logo { font-size: 20px; font-weight: bold; color: #F5C842; letter-spacing: 2px; }
+        .status-badge { background: #0d3320; border: 1px solid #27ae60; color: #27ae60; padding: 4px 12px; border-radius: 4px; font-size: 11px; letter-spacing: 1px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .header-right { display: flex; align-items: center; gap: 16px; }
-
-        .clock {
-            font-size: 14px;
-            color: #8899aa;
-            letter-spacing: 1px;
-        }
-
-        .export-btn {
-            background: #1e3a5f;
-            color: #F5C842;
-            border: 1px solid #F5C842;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            letter-spacing: 1px;
-            font-family: 'Courier New', monospace;
-        }
-
+        .clock { font-size: 14px; color: #8899aa; letter-spacing: 1px; }
+        .export-btn { background: #1e3a5f; color: #F5C842; border: 1px solid #F5C842; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 12px; letter-spacing: 1px; font-family: 'Courier New', monospace; }
         .export-btn:hover { background: #2a4f80; }
-
-        /* TICKER */
-        .ticker {
-            background: #c0392b;
-            padding: 6px 0;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .ticker-inner {
-            display: inline-block;
-            animation: ticker 30s linear infinite;
-            font-size: 12px;
-            letter-spacing: 1px;
-        }
-
-        @keyframes ticker {
-            0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* MAIN LAYOUT */
+        .ticker { background: #c0392b; padding: 6px 0; overflow: hidden; white-space: nowrap; }
+        .ticker-inner { display: inline-block; animation: ticker 30s linear infinite; font-size: 12px; letter-spacing: 1px; }
+        @keyframes ticker { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
         .main { display: grid; grid-template-columns: 280px 1fr 280px; gap: 0; height: calc(100vh - 90px); }
-
-        /* LEFT PANEL */
-        .left-panel {
-            background: #0d1220;
-            border-right: 1px solid #1e3a5f;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        .panel-title {
-            font-size: 11px;
-            letter-spacing: 2px;
-            color: #F5C842;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #1e3a5f;
-        }
-
-        /* STAT CARDS */
-        .stat-card {
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            padding: 14px;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .stat-label {
-            font-size: 10px;
-            color: #8899aa;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .stat-card .stat-num {
-            font-size: 36px;
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .stat-card .stat-sub {
-            font-size: 11px;
-            color: #8899aa;
-            margin-top: 4px;
-        }
-
-        .num-red { color: #e74c3c; }
-        .num-yellow { color: #F5C842; }
-        .num-green { color: #27ae60; }
-        .num-blue { color: #3498db; }
-
-        /* SEVERITY BARS */
+        .left-panel { background: #0d1220; border-right: 1px solid #1e3a5f; overflow-y: auto; padding: 16px; }
+        .panel-title { font-size: 11px; letter-spacing: 2px; color: #F5C842; text-transform: uppercase; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #1e3a5f; }
+        .stat-card { background: #111827; border: 1px solid #1e3a5f; border-radius: 6px; padding: 14px; margin-bottom: 10px; }
+        .stat-card .stat-label { font-size: 10px; color: #8899aa; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+        .stat-card .stat-num { font-size: 36px; font-weight: bold; line-height: 1; }
+        .stat-card .stat-sub { font-size: 11px; color: #8899aa; margin-top: 4px; }
+        .num-red { color: #e74c3c; } .num-yellow { color: #F5C842; } .num-green { color: #27ae60; } .num-blue { color: #3498db; }
         .severity-section { margin-top: 16px; }
-
         .sev-item { margin-bottom: 10px; }
         .sev-label { display: flex; justify-content: space-between; font-size: 11px; color: #8899aa; margin-bottom: 4px; }
         .sev-bar { height: 6px; background: #1e3a5f; border-radius: 3px; overflow: hidden; }
         .sev-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
-
-        /* CENTER — MAP */
         .center-panel { position: relative; }
-
         #warmap { height: 100%; width: 100%; }
-
-        .map-overlay {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .map-btn {
-            background: rgba(13, 18, 32, 0.9);
-            border: 1px solid #1e3a5f;
-            color: #e0e6f0;
-            padding: 8px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            letter-spacing: 1px;
-            font-family: 'Courier New', monospace;
-        }
-
+        .map-overlay { position: absolute; top: 12px; left: 12px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+        .map-btn { background: rgba(13, 18, 32, 0.9); border: 1px solid #1e3a5f; color: #e0e6f0; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 11px; letter-spacing: 1px; font-family: 'Courier New', monospace; }
         .map-btn.active { border-color: #F5C842; color: #F5C842; }
         .map-btn:hover { background: rgba(30, 58, 95, 0.9); }
-
-        /* RIGHT PANEL */
-        .right-panel {
-            background: #0d1220;
-            border-left: 1px solid #1e3a5f;
-            overflow-y: auto;
-            padding: 16px;
-        }
-
-        /* REPORT LIST */
-        .report-item-war {
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            border-radius: 6px;
-            padding: 12px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: border-color 0.2s;
-        }
-
+        .right-panel { background: #0d1220; border-left: 1px solid #1e3a5f; overflow-y: auto; padding: 16px; }
+        .report-item-war { background: #111827; border: 1px solid #1e3a5f; border-radius: 6px; padding: 12px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.2s; }
         .report-item-war:hover { border-color: #3498db; }
         .report-item-war.critical { border-left: 3px solid #e74c3c; }
-        .report-item-war.high { border-left: 3px solid #f39c12; }
         .report-item-war.medium { border-left: 3px solid #F5C842; }
-
-        .report-type {
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
+        .report-type { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
         .report-name { font-size: 13px; color: #e0e6f0; margin-bottom: 3px; }
         .report-time { font-size: 10px; color: #8899aa; }
-
-        .verify-btn {
-            background: #0d3320;
-            border: 1px solid #27ae60;
-            color: #27ae60;
-            padding: 4px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            margin-top: 6px;
-            font-family: 'Courier New', monospace;
-        }
-
+        .verify-btn { background: #0d3320; border: 1px solid #27ae60; color: #27ae60; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 10px; margin-top: 6px; font-family: 'Courier New', monospace; }
         .verify-btn:hover { background: #27ae60; color: white; }
         .verified-badge { color: #27ae60; font-size: 10px; margin-top: 6px; }
-
-        /* FILTER BAR */
-        .filter-bar {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .filter-btn {
-            background: #111827;
-            border: 1px solid #1e3a5f;
-            color: #8899aa;
-            padding: 4px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 10px;
-            letter-spacing: 1px;
-            font-family: 'Courier New', monospace;
-        }
-
+        .filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+        .filter-btn { background: #111827; border: 1px solid #1e3a5f; color: #8899aa; padding: 4px 10px; border-radius: 3px; cursor: pointer; font-size: 10px; letter-spacing: 1px; font-family: 'Courier New', monospace; }
         .filter-btn.active { border-color: #F5C842; color: #F5C842; }
-
-        /* ALERT TICKER ITEMS */
         .alert-list { margin-top: 16px; }
-
-        .alert-item {
-            background: #1a0a0a;
-            border: 1px solid #e74c3c;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 8px;
-            font-size: 11px;
-            color: #e74c3c;
-        }
-
-        .alert-item.warning {
-            background: #1a1500;
-            border-color: #F5C842;
-            color: #F5C842;
-        }
-
-        /* PDF REPORT */
-        #pdf-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .alert-item { background: #1a0a0a; border: 1px solid #e74c3c; border-radius: 4px; padding: 10px; margin-bottom: 8px; font-size: 11px; color: #e74c3c; }
+        .alert-item.warning { background: #1a1500; border-color: #F5C842; color: #F5C842; }
+        #pdf-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; align-items: center; justify-content: center; }
         #pdf-modal.open { display: flex; }
-
-        .pdf-content {
-            background: white;
-            color: #333;
-            width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border-radius: 8px;
-            padding: 40px;
-            font-family: Arial, sans-serif;
-        }
-
+        .pdf-content { background: white; color: #333; width: 600px; max-height: 80vh; overflow-y: auto; border-radius: 8px; padding: 40px; font-family: Arial, sans-serif; }
         .pdf-content h1 { color: #1a3a5c; font-size: 22px; margin-bottom: 5px; }
         .pdf-content h2 { color: #1a3a5c; font-size: 16px; margin: 20px 0 10px; border-bottom: 2px solid #1a3a5c; padding-bottom: 5px; }
         .pdf-content p { font-size: 13px; margin-bottom: 6px; color: #555; }
         .pdf-content table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
         .pdf-content td, .pdf-content th { border: 1px solid #ddd; padding: 8px; text-align: left; }
         .pdf-content th { background: #1a3a5c; color: white; }
-
         .pdf-actions { display: flex; gap: 10px; margin-top: 20px; }
         .pdf-print { background: #1a3a5c; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
         .pdf-close { background: #e0e0e0; color: #333; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 14px; }
-
-        @media (max-width: 900px) {
-            .main { grid-template-columns: 1fr; grid-template-rows: auto; }
-            #warmap { height: 300px; }
-            .left-panel, .right-panel { max-height: 300px; }
-        }
+        @media (max-width: 900px) { .main { grid-template-columns: 1fr; } #warmap { height: 300px; } .left-panel, .right-panel { max-height: 300px; } }
     </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
     <div class="header-left">
         <div class="logo">⚡ SAHAYAMAP WAR ROOM</div>
@@ -336,69 +89,32 @@
     </div>
 </div>
 
-<!-- TICKER -->
 <div class="ticker">
-    <div class="ticker-inner" id="ticker-text">
-        ⚠ LOADING LIVE DATA... &nbsp;&nbsp;&nbsp; ⚠ SAHAYAMAP DISASTER COMMAND CENTER &nbsp;&nbsp;&nbsp; ⚠ ANDHRA PRADESH SDMA &nbsp;&nbsp;&nbsp;
-    </div>
+    <div class="ticker-inner" id="ticker-text">⚠ LOADING LIVE DATA... &nbsp;&nbsp;&nbsp; ⚠ SAHAYAMAP DISASTER COMMAND CENTER &nbsp;&nbsp;&nbsp; ⚠ ANDHRA PRADESH SDMA &nbsp;&nbsp;&nbsp;</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
-
-    <!-- LEFT PANEL — STATS -->
     <div class="left-panel">
         <div class="panel-title">▶ SITUATION OVERVIEW</div>
-
-        <div class="stat-card">
-            <div class="stat-label">Total Reports</div>
-            <div class="stat-num num-red" id="stat-total">0</div>
-            <div class="stat-sub">across Andhra Pradesh</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Critical (Trapped + Medical)</div>
-            <div class="stat-num num-red" id="stat-critical">0</div>
-            <div class="stat-sub">immediate response needed</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Verified Reports</div>
-            <div class="stat-num num-green" id="stat-verified">0</div>
-            <div class="stat-sub">confirmed by ground volunteers</div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-label">Active Relief Orgs</div>
-            <div class="stat-num num-blue" id="stat-orgs">0</div>
-            <div class="stat-sub">NGOs + government teams</div>
-        </div>
-
-        <div class="severity-section">
-            <div class="panel-title">▶ DAMAGE BREAKDOWN</div>
-            <div id="severity-bars"></div>
-        </div>
-
-        <div class="alert-list">
-            <div class="panel-title">▶ SYSTEM ALERTS</div>
-            <div id="alerts-list"></div>
-        </div>
+        <div class="stat-card"><div class="stat-label">Total Reports</div><div class="stat-num num-red" id="stat-total">0</div><div class="stat-sub">across Andhra Pradesh</div></div>
+        <div class="stat-card"><div class="stat-label">Critical (Trapped + Medical)</div><div class="stat-num num-red" id="stat-critical">0</div><div class="stat-sub">immediate response needed</div></div>
+        <div class="stat-card"><div class="stat-label">Verified Reports</div><div class="stat-num num-green" id="stat-verified">0</div><div class="stat-sub">confirmed by ground volunteers</div></div>
+        <div class="stat-card"><div class="stat-label">Active Relief Orgs</div><div class="stat-num num-blue" id="stat-orgs">0</div><div class="stat-sub">NGOs + government teams</div></div>
+        <div class="severity-section"><div class="panel-title">▶ DAMAGE BREAKDOWN</div><div id="severity-bars"></div></div>
+        <div class="alert-list"><div class="panel-title">▶ SYSTEM ALERTS</div><div id="alerts-list"></div></div>
     </div>
 
-    <!-- CENTER — MAP -->
     <div class="center-panel">
         <div class="map-overlay">
-            <button class="map-btn active" onclick="toggleLayer('heat')">🔥 HEATMAP</button>
-            <button class="map-btn" onclick="toggleLayer('pins')">📍 PINS</button>
-            <button class="map-btn" onclick="toggleLayer('both')">⊕ BOTH</button>
+            <button class="map-btn active" onclick="toggleLayer('heat', event)">🔥 HEATMAP</button>
+            <button class="map-btn" onclick="toggleLayer('pins', event)">📍 PINS</button>
+            <button class="map-btn" onclick="toggleLayer('both', event)">⊕ BOTH</button>
         </div>
         <div id="warmap"></div>
     </div>
 
-    <!-- RIGHT PANEL — REPORTS -->
     <div class="right-panel">
         <div class="panel-title">▶ LIVE REPORTS FEED</div>
-
         <div class="filter-bar">
             <button class="filter-btn active" onclick="filterReports('all', this)">ALL</button>
             <button class="filter-btn" onclick="filterReports('People Trapped', this)">TRAPPED</button>
@@ -406,35 +122,20 @@
             <button class="filter-btn" onclick="filterReports('House Damage', this)">HOUSE</button>
             <button class="filter-btn" onclick="filterReports('Need Food/Water', this)">FOOD</button>
         </div>
-
-        <div id="war-reports-list">
-            <div style="color:#8899aa;font-size:12px;text-align:center;padding:20px">Loading reports...</div>
-        </div>
+        <div id="war-reports-list"><div style="color:#8899aa;font-size:12px;text-align:center;padding:20px">Loading reports...</div></div>
     </div>
-
 </div>
 
-<!-- PDF MODAL -->
 <div id="pdf-modal">
-    <div class="pdf-content" id="pdf-content">
+    <div class="pdf-content">
         <h1>🌊 SahayamAP Situation Report</h1>
         <p id="pdf-date"></p>
         <p>Andhra Pradesh State Disaster Management Authority</p>
-
-        <h2>Executive Summary</h2>
-        <div id="pdf-summary"></div>
-
+        <h2>Executive Summary</h2><div id="pdf-summary"></div>
         <h2>Damage Report Breakdown</h2>
-        <table id="pdf-table">
-            <tr><th>Damage Type</th><th>Count</th><th>Verified</th></tr>
-        </table>
-
-        <h2>Critical Incidents</h2>
-        <div id="pdf-critical"></div>
-
-        <h2>Relief Operations</h2>
-        <div id="pdf-relief"></div>
-
+        <table id="pdf-table"><tr><th>Damage Type</th><th>Count</th><th>Verified</th></tr></table>
+        <h2>Critical Incidents</h2><div id="pdf-critical"></div>
+        <h2>Relief Operations</h2><div id="pdf-relief"></div>
         <div class="pdf-actions">
             <button class="pdf-print" onclick="window.print()">🖨️ Print / Download PDF</button>
             <button class="pdf-close" onclick="closePDF()">Close</button>
@@ -443,236 +144,134 @@
 </div>
 
 <script>
-    let allReports = [];
-    let allSupplies = [];
-    let currentFilter = 'all';
-    let warMap = null;
-    let heatLayer = null;
-    let markersLayer = [];
-    let currentLayer = 'heat';
+    // AUTH CHECK — must be logged in as government/collector
+    (function() {
+        const role = localStorage.getItem('sahayam_role');
+        const token = localStorage.getItem('sahayam_token');
+        if (!token || (role !== 'government' && role !== 'collector')) {
+            window.location.href = '/login';
+        }
+    })();
+
+    let allReports = [], allSupplies = [], currentFilter = 'all';
+    let warMap = null, heatLayer = null, markersLayer = [], currentLayer = 'heat';
 
     const damageColors = {
-        'House Damage': '#e74c3c',
-        'Road Blocked': '#f39c12',
-        'Need Food/Water': '#27ae60',
-        'Medical Emergency': '#8e44ad',
-        'People Trapped': '#c0392b',
-        'No Electricity': '#f1c40f'
+        'House Damage': '#e74c3c', 'Road Blocked': '#f39c12',
+        'Need Food/Water': '#27ae60', 'Medical Emergency': '#8e44ad',
+        'People Trapped': '#c0392b', 'No Electricity': '#f1c40f'
     };
-
     const criticalTypes = ['People Trapped', 'Medical Emergency'];
 
-    // Clock
     function updateClock() {
         const now = new Date();
-        document.getElementById('clock').textContent =
-            now.toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
+        document.getElementById('clock').textContent = now.toLocaleTimeString('en-IN', { hour12: false }) + ' IST';
     }
     setInterval(updateClock, 1000);
     updateClock();
 
-    // Init map
     function initMap() {
         warMap = L.map('warmap', { zoomControl: true }).setView([16.5, 80.6], 7);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap',
-            className: 'dark-tiles'
-        }).addTo(warMap);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(warMap);
     }
 
-    // Toggle map layers
-    function toggleLayer(type) {
+    function toggleLayer(type, e) {
         currentLayer = type;
         document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
+        e.target.classList.add('active');
         renderMap();
     }
 
-    // Render map based on current layer setting
     function renderMap() {
-        // Remove existing layers
         if (heatLayer) warMap.removeLayer(heatLayer);
         markersLayer.forEach(m => warMap.removeLayer(m));
         markersLayer = [];
-
         const heatPoints = [];
-
         allReports.forEach(report => {
             if (!report.latitude || !report.longitude) return;
-
-            const intensity = report.damage_type === 'People Trapped' ? 1.0 :
-                             report.damage_type === 'Medical Emergency' ? 0.9 :
-                             report.damage_type === 'House Damage' ? 0.7 :
-                             report.damage_type === 'Need Food/Water' ? 0.6 : 0.5;
-
+            const intensity = report.damage_type === 'People Trapped' ? 1.0 : report.damage_type === 'Medical Emergency' ? 0.9 : report.damage_type === 'House Damage' ? 0.7 : 0.5;
             heatPoints.push([report.latitude, report.longitude, intensity]);
-
             if (currentLayer === 'pins' || currentLayer === 'both') {
                 const color = damageColors[report.damage_type] || '#1a3a5c';
                 const marker = L.circleMarker([report.latitude, report.longitude], {
-                    radius: report.verified ? 14 : 10,
-                    fillColor: color,
+                    radius: report.verified ? 14 : 10, fillColor: color,
                     color: report.verified ? '#27ae60' : 'white',
-                    weight: report.verified ? 3 : 2,
-                    fillOpacity: 0.9
-                }).bindPopup(`
-                    <div style="min-width:180px;font-family:Arial">
-                        <b style="color:${color}">${report.damage_type}</b><br>
-                        ${report.name || 'Anonymous'}<br>
-                        ${report.description || ''}<br>
-                        ${report.verified ? '<span style="color:#27ae60">✅ VERIFIED</span>' : '<span style="color:#f39c12">⏳ Unverified</span>'}<br>
-                        <small style="color:#999">${report.timestamp}</small>
-                    </div>
-                `);
+                    weight: report.verified ? 3 : 2, fillOpacity: 0.9
+                }).bindPopup(`<div style="min-width:180px;font-family:Arial"><b style="color:${color}">${report.damage_type}</b><br>${report.name || 'Anonymous'}<br>${report.verified ? '<span style="color:#27ae60">✅ VERIFIED</span>' : '<span style="color:#f39c12">⏳ Unverified</span>'}<br><small style="color:#999">${report.timestamp}</small></div>`);
                 marker.addTo(warMap);
                 markersLayer.push(marker);
             }
         });
-
         if ((currentLayer === 'heat' || currentLayer === 'both') && heatPoints.length > 0) {
-            heatLayer = L.heatLayer(heatPoints, {
-                radius: 40, blur: 25, maxZoom: 10,
-                gradient: { 0.0: 'blue', 0.3: 'cyan', 0.5: 'yellow', 0.7: 'orange', 1.0: 'red' }
-            }).addTo(warMap);
+            heatLayer = L.heatLayer(heatPoints, { radius: 40, blur: 25, maxZoom: 10, gradient: { 0.0: 'blue', 0.3: 'cyan', 0.5: 'yellow', 0.7: 'orange', 1.0: 'red' } }).addTo(warMap);
         }
     }
 
-    // Load all data
     async function loadData() {
         try {
             const [rRes, sRes] = await Promise.all([fetch('/reports'), fetch('/relief_data')]);
             allReports = await rRes.json();
             allSupplies = await sRes.json();
-            updateStats();
-            renderMap();
-            renderReports();
-            updateTicker();
-            updateAlerts();
-        } catch (err) {
-            console.error('Error loading data:', err);
-        }
+            updateStats(); renderMap(); renderReports(); updateTicker(); updateAlerts();
+        } catch (err) { console.error(err); }
     }
 
-    // Update stats
     function updateStats() {
         const total = allReports.length;
         const critical = allReports.filter(r => criticalTypes.includes(r.damage_type)).length;
         const verified = allReports.filter(r => r.verified).length;
         const orgs = new Set(allSupplies.map(s => s.org_name)).size;
-
         document.getElementById('stat-total').textContent = total;
         document.getElementById('stat-critical').textContent = critical;
         document.getElementById('stat-verified').textContent = verified;
         document.getElementById('stat-orgs').textContent = orgs;
-
-        // Severity bars
         const types = ['People Trapped', 'Medical Emergency', 'House Damage', 'Need Food/Water', 'Road Blocked', 'No Electricity'];
         const colors = ['#c0392b', '#8e44ad', '#e74c3c', '#27ae60', '#f39c12', '#f1c40f'];
-        const barsHTML = types.map((type, i) => {
+        document.getElementById('severity-bars').innerHTML = types.map((type, i) => {
             const count = allReports.filter(r => r.damage_type === type).length;
             const pct = total > 0 ? (count / total * 100) : 0;
-            return `
-                <div class="sev-item">
-                    <div class="sev-label">
-                        <span>${type.toUpperCase()}</span>
-                        <span style="color:${colors[i]}">${count}</span>
-                    </div>
-                    <div class="sev-bar">
-                        <div class="sev-fill" style="width:${pct}%;background:${colors[i]}"></div>
-                    </div>
-                </div>
-            `;
+            return `<div class="sev-item"><div class="sev-label"><span>${type.toUpperCase()}</span><span style="color:${colors[i]}">${count}</span></div><div class="sev-bar"><div class="sev-fill" style="width:${pct}%;background:${colors[i]}"></div></div></div>`;
         }).join('');
-        document.getElementById('severity-bars').innerHTML = barsHTML;
     }
 
-    // Update ticker
     function updateTicker() {
         const critical = allReports.filter(r => criticalTypes.includes(r.damage_type));
-        let tickerText = `⚠ TOTAL REPORTS: ${allReports.length} &nbsp;&nbsp;&nbsp; `;
-        tickerText += `🚨 CRITICAL INCIDENTS: ${critical.length} &nbsp;&nbsp;&nbsp; `;
-        tickerText += `✅ VERIFIED: ${allReports.filter(r => r.verified).length} &nbsp;&nbsp;&nbsp; `;
-        tickerText += `🤝 RELIEF ORGS ACTIVE: ${new Set(allSupplies.map(s => s.org_name)).size} &nbsp;&nbsp;&nbsp; `;
-        if (critical.length > 0) {
-            critical.forEach(r => {
-                tickerText += `🆘 ${r.damage_type.toUpperCase()} REPORTED BY ${(r.name || 'ANONYMOUS').toUpperCase()} &nbsp;&nbsp;&nbsp; `;
-            });
-        }
-        document.getElementById('ticker-text').innerHTML = tickerText;
+        let t = `⚠ TOTAL REPORTS: ${allReports.length} &nbsp;&nbsp;&nbsp; 🚨 CRITICAL: ${critical.length} &nbsp;&nbsp;&nbsp; ✅ VERIFIED: ${allReports.filter(r => r.verified).length} &nbsp;&nbsp;&nbsp; 🤝 RELIEF ORGS: ${new Set(allSupplies.map(s => s.org_name)).size} &nbsp;&nbsp;&nbsp;`;
+        critical.forEach(r => { t += `🆘 ${r.damage_type.toUpperCase()} — ${(r.name || 'ANONYMOUS').toUpperCase()} &nbsp;&nbsp;&nbsp;`; });
+        document.getElementById('ticker-text').innerHTML = t;
     }
 
-    // Update alerts
     function updateAlerts() {
         const alerts = [];
         const critical = allReports.filter(r => criticalTypes.includes(r.damage_type));
-        if (critical.length > 0) {
-            alerts.push({ type: 'critical', msg: `🚨 ${critical.length} CRITICAL INCIDENT(S) REQUIRE IMMEDIATE RESPONSE` });
-        }
+        if (critical.length > 0) alerts.push({ type: 'critical', msg: `🚨 ${critical.length} CRITICAL INCIDENT(S) REQUIRE IMMEDIATE RESPONSE` });
         const unverified = allReports.filter(r => !r.verified).length;
-        if (unverified > 3) {
-            alerts.push({ type: 'warning', msg: `⚠ ${unverified} REPORTS AWAITING VOLUNTEER VERIFICATION` });
-        }
-
-        // Check relief duplication
+        if (unverified > 3) alerts.push({ type: 'warning', msg: `⚠ ${unverified} REPORTS AWAITING VERIFICATION` });
         const areaMap = {};
-        allSupplies.forEach(s => {
-            const key = s.going_to + '|' + s.supply_type;
-            if (!areaMap[key]) areaMap[key] = [];
-            areaMap[key].push(s.org_name);
-        });
+        allSupplies.forEach(s => { const k = s.going_to + '|' + s.supply_type; if (!areaMap[k]) areaMap[k] = []; areaMap[k].push(s.org_name); });
         const dups = Object.entries(areaMap).filter(([k, v]) => v.length > 1);
-        if (dups.length > 0) {
-            alerts.push({ type: 'warning', msg: `⚠ ${dups.length} DUPLICATION(S) DETECTED IN RELIEF SUPPLY` });
-        }
-
-        if (alerts.length === 0) {
-            alerts.push({ type: 'warning', msg: '✅ NO CRITICAL ALERTS — SITUATION STABLE' });
-        }
-
-        document.getElementById('alerts-list').innerHTML = alerts.map(a =>
-            `<div class="alert-item ${a.type === 'warning' ? 'warning' : ''}">${a.msg}</div>`
-        ).join('');
+        if (dups.length > 0) alerts.push({ type: 'warning', msg: `⚠ ${dups.length} DUPLICATION(S) IN RELIEF SUPPLY` });
+        if (alerts.length === 0) alerts.push({ type: 'warning', msg: '✅ NO CRITICAL ALERTS — SITUATION STABLE' });
+        document.getElementById('alerts-list').innerHTML = alerts.map(a => `<div class="alert-item ${a.type === 'warning' ? 'warning' : ''}">${a.msg}</div>`).join('');
     }
 
-    // Render reports list
     function renderReports() {
-        const filtered = currentFilter === 'all'
-            ? allReports
-            : allReports.filter(r => r.damage_type === currentFilter);
-
-        const sorted = filtered.slice().sort((a, b) => {
-            const aScore = criticalTypes.includes(a.damage_type) ? 2 : 1;
-            const bScore = criticalTypes.includes(b.damage_type) ? 2 : 1;
-            return bScore - aScore;
-        });
-
-        if (sorted.length === 0) {
-            document.getElementById('war-reports-list').innerHTML =
-                '<div style="color:#8899aa;font-size:12px;text-align:center;padding:20px">NO REPORTS</div>';
-            return;
-        }
-
+        const filtered = currentFilter === 'all' ? allReports : allReports.filter(r => r.damage_type === currentFilter);
+        const sorted = filtered.slice().sort((a, b) => (criticalTypes.includes(b.damage_type) ? 1 : 0) - (criticalTypes.includes(a.damage_type) ? 1 : 0));
+        if (sorted.length === 0) { document.getElementById('war-reports-list').innerHTML = '<div style="color:#8899aa;font-size:12px;text-align:center;padding:20px">NO REPORTS</div>'; return; }
         document.getElementById('war-reports-list').innerHTML = sorted.reverse().map(r => {
-            const isCritical = criticalTypes.includes(r.damage_type);
-            const severity = isCritical ? 'critical' : 'medium';
             const color = damageColors[r.damage_type] || '#8899aa';
-            return `
-                <div class="report-item-war ${severity}">
-                    <div class="report-type" style="color:${color}">${r.damage_type.toUpperCase()}</div>
-                    <div class="report-name">${r.name || 'Anonymous'}</div>
-                    ${r.description ? `<div style="font-size:11px;color:#8899aa;margin-top:2px">${r.description}</div>` : ''}
-                    ${r.phone ? `<div style="font-size:11px;color:#8899aa">📞 ${r.phone}</div>` : ''}
-                    <div class="report-time">${r.timestamp}</div>
-                    ${r.verified
-                        ? `<div class="verified-badge">✅ VERIFIED</div>`
-                        : `<button class="verify-btn" onclick="verifyReport(${r.id}, this)">✓ MARK VERIFIED</button>`
-                    }
-                </div>
-            `;
+            return `<div class="report-item-war ${criticalTypes.includes(r.damage_type) ? 'critical' : 'medium'}">
+                <div class="report-type" style="color:${color}">${r.damage_type.toUpperCase()}</div>
+                <div class="report-name">${r.name || 'Anonymous'}</div>
+                ${r.description ? `<div style="font-size:11px;color:#8899aa;margin-top:2px">${r.description}</div>` : ''}
+                ${r.phone ? `<div style="font-size:11px;color:#8899aa">📞 ${r.phone}</div>` : ''}
+                <div class="report-time">${r.timestamp}</div>
+                ${r.verified ? `<div class="verified-badge">✅ VERIFIED</div>` : `<button class="verify-btn" onclick="verifyReport(${r.id}, this)">✓ MARK VERIFIED</button>`}
+            </div>`;
         }).join('');
     }
 
-    // Filter reports
     function filterReports(type, btn) {
         currentFilter = type;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -680,72 +279,37 @@
         renderReports();
     }
 
-    // Verify report
     async function verifyReport(id, btn) {
         try {
             await fetch(`/verify/${id}`, { method: 'POST' });
             btn.outerHTML = '<div class="verified-badge">✅ VERIFIED</div>';
             const report = allReports.find(r => r.id === id);
             if (report) report.verified = 1;
-            updateStats();
-            renderMap();
-        } catch (err) {
-            alert('Error verifying report');
-        }
+            updateStats(); renderMap();
+        } catch (err) { alert('Error verifying report'); }
     }
 
-    // PDF Situation Report
     function openPDF() {
         const now = new Date();
-        document.getElementById('pdf-date').textContent =
-            `Generated: ${now.toLocaleString('en-IN')} IST`;
-
+        document.getElementById('pdf-date').textContent = `Generated: ${now.toLocaleString('en-IN')} IST`;
         const total = allReports.length;
-        const critical = allReports.filter(r => criticalTypes.includes(r.damage_type)).length;
-        const verified = allReports.filter(r => r.verified).length;
-
-        document.getElementById('pdf-summary').innerHTML = `
-            <p><strong>Total Reports:</strong> ${total}</p>
-            <p><strong>Critical Incidents:</strong> ${critical}</p>
-            <p><strong>Verified Reports:</strong> ${verified}</p>
-            <p><strong>Active Relief Organizations:</strong> ${new Set(allSupplies.map(s => s.org_name)).size}</p>
-            <p><strong>Areas Being Served:</strong> ${new Set(allSupplies.map(s => s.going_to)).size}</p>
-        `;
-
+        document.getElementById('pdf-summary').innerHTML = `<p><strong>Total Reports:</strong> ${total}</p><p><strong>Critical Incidents:</strong> ${allReports.filter(r => criticalTypes.includes(r.damage_type)).length}</p><p><strong>Verified Reports:</strong> ${allReports.filter(r => r.verified).length}</p><p><strong>Active Relief Organizations:</strong> ${new Set(allSupplies.map(s => s.org_name)).size}</p>`;
         const types = ['People Trapped', 'Medical Emergency', 'House Damage', 'Need Food/Water', 'Road Blocked', 'No Electricity'];
-        const tableRows = types.map(type => {
-            const count = allReports.filter(r => r.damage_type === type).length;
-            const verCount = allReports.filter(r => r.damage_type === type && r.verified).length;
-            return `<tr><td>${type}</td><td>${count}</td><td>${verCount}</td></tr>`;
-        }).join('');
-        document.getElementById('pdf-table').innerHTML =
-            '<tr><th>Damage Type</th><th>Total Reports</th><th>Verified</th></tr>' + tableRows;
-
+        document.getElementById('pdf-table').innerHTML = '<tr><th>Damage Type</th><th>Total</th><th>Verified</th></tr>' + types.map(type => `<tr><td>${type}</td><td>${allReports.filter(r => r.damage_type === type).length}</td><td>${allReports.filter(r => r.damage_type === type && r.verified).length}</td></tr>`).join('');
         const criticalReports = allReports.filter(r => criticalTypes.includes(r.damage_type));
-        document.getElementById('pdf-critical').innerHTML = criticalReports.length > 0
-            ? criticalReports.map(r => `<p>• <strong>${r.damage_type}</strong> — ${r.name || 'Anonymous'} ${r.phone ? `(${r.phone})` : ''} — ${r.timestamp}</p>`).join('')
-            : '<p>No critical incidents reported.</p>';
-
-        document.getElementById('pdf-relief').innerHTML = allSupplies.length > 0
-            ? allSupplies.map(s => `<p>• <strong>${s.org_name}</strong> sending ${s.quantity} of ${s.supply_type} to ${s.going_to}</p>`).join('')
-            : '<p>No relief operations logged.</p>';
-
+        document.getElementById('pdf-critical').innerHTML = criticalReports.length > 0 ? criticalReports.map(r => `<p>• <strong>${r.damage_type}</strong> — ${r.name || 'Anonymous'} ${r.phone ? `(${r.phone})` : ''} — ${r.timestamp}</p>`).join('') : '<p>No critical incidents.</p>';
+        document.getElementById('pdf-relief').innerHTML = allSupplies.length > 0 ? allSupplies.map(s => `<p>• <strong>${s.org_name}</strong> sending ${s.quantity} of ${s.supply_type} to ${s.going_to}</p>`).join('') : '<p>No relief operations logged.</p>';
         document.getElementById('pdf-modal').classList.add('open');
     }
 
-    function closePDF() {
-        document.getElementById('pdf-modal').classList.remove('open');
-    }
+    function closePDF() { document.getElementById('pdf-modal').classList.remove('open'); }
 
-    // Init
     initMap();
     loadData();
     setInterval(loadData, 15000);
 
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('SW registered'))
-            .catch(err => console.log('SW error:', err));
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
     }
 </script>
 </body>
