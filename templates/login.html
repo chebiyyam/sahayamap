@@ -243,22 +243,17 @@
             const { data, error } = await sb.auth.signInWithPassword({ email, password });
             if (error) { showError(error.message); return; }
 
-            // Get role and redirect
-            const token = data.session.access_token;
-            const res = await fetch('/api/role', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token })
-            });
-            const roleData = await res.json();
-            const role = roleData.role;
+            const { data: profile } = await sb.from('profiles')
+                .select('role')
+                .eq('id', data.user.id)
+                .single();
 
-            // Store in localStorage
-            localStorage.setItem('sahayam_token', token);
+            const role = profile ? profile.role : 'citizen';
+
+            localStorage.setItem('sahayam_token', data.session.access_token);
             localStorage.setItem('sahayam_role', role);
             localStorage.setItem('sahayam_email', email);
 
-            // Redirect based on role
             if (role === 'government' || role === 'collector') {
                 window.location.href = '/warroom';
             } else if (role === 'ngo') {
@@ -283,40 +278,48 @@
 
         try {
             const { data, error } = await sb.auth.signUp({ email, password });
-            if (error) { showError(error.message); return; }
 
-            // Create profile with role
+            // Always show success if no auth error — profile creation is secondary
+            if (error) {
+                showError(error.message);
+                return;
+            }
+
+            // Try to create profile but don't block on failure
             if (data.user) {
-                await sb.from('profiles').upsert({
-                    id: data.user.id,
-                    email: email,
-                    role: role,
-                    org_name: org
-                });
+                try {
+                    await sb.from('profiles').upsert({
+                        id: data.user.id,
+                        email: email,
+                        role: role,
+                        org_name: org
+                    });
+                } catch (profileErr) {
+                    // Profile creation failed but account exists — ignore silently
+                    console.log('Profile creation note:', profileErr);
+                }
             }
 
             showSuccess('Account created! You can now sign in.');
-            switchTab('signin');
+            document.querySelectorAll('.tab')[0].click();
             document.getElementById('signin-email').value = email;
+
         } catch (err) {
             showError('Sign up failed. Please try again.');
         }
     }
 
-    // Check if already logged in
     async function checkSession() {
         const { data } = await sb.auth.getSession();
         if (data.session) {
-            const token = data.session.access_token;
-            const res = await fetch('/api/role', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token })
-            });
-            const roleData = await res.json();
-            if (roleData.role === 'government' || roleData.role === 'collector') {
+            const { data: profile } = await sb.from('profiles')
+                .select('role')
+                .eq('id', data.session.user.id)
+                .single();
+            const role = profile ? profile.role : 'citizen';
+            if (role === 'government' || role === 'collector') {
                 window.location.href = '/warroom';
-            } else if (roleData.role === 'ngo') {
+            } else if (role === 'ngo') {
                 window.location.href = '/relief';
             }
         }
